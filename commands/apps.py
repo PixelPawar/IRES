@@ -1,9 +1,9 @@
-from config import APPLICATIONS
-from utils.parser import is_open_command
-from speech import say
 import subprocess
-from utils.parser import fuzzy_match 
+
+from config import APPLICATIONS
+from speech import say
 from utils.app_finder import find_executable
+from utils.parser import fuzzy_match, is_open_command
 
 
 OPEN_WORDS = [
@@ -14,23 +14,24 @@ OPEN_WORDS = [
 
 
 def open_application(query):
+    """
+    Opens an application based on the user's query.
+    """
 
     if not is_open_command(query, OPEN_WORDS):
         return False
 
+    app_name = extract_app_name(query)
+
+    all_aliases = []
+
     for app in APPLICATIONS.values():
+        all_aliases.extend(app["aliases"])
 
-        app_name = extract_app_name(query)
+    match = fuzzy_match(app_name, all_aliases)
 
-        all_aliases = []
-
-        for app in APPLICATIONS.values():
-            all_aliases.extend(app["aliases"])
-
-        match = fuzzy_match(app_name, all_aliases)
-
-        if not match:
-            return False
+    if not match:
+        return False
 
     for app in APPLICATIONS.values():
 
@@ -53,11 +54,12 @@ def open_application(query):
                 print(e)
                 return True
 
+    return False
 
 
 def extract_app_name(query):
     """
-    Remove command words and return only the application name.
+    Removes command words and returns only the application name.
     """
 
     words_to_remove = [

@@ -1,5 +1,8 @@
 from speech import say, take_task
 from command_processor import process_query
+from utils.app_index import build_index
+
+build_index()
 
 def main():
     say("Assistant activated.")

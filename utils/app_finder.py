@@ -1,26 +1,16 @@
-import os
+import json
+
+CACHE_FILE = "cache/apps.json"
 
 
-SEARCH_PATHS = [
-    os.environ.get("PROGRAMFILES"),
-    os.environ.get("PROGRAMFILES(X86)"),
-    os.environ.get("LOCALAPPDATA"),
-]
+def load_index():
+
+    with open(CACHE_FILE, "r") as f:
+        return json.load(f)
 
 
-def find_executable(executable_name):
-    """
-    Search common Windows installation folders for an executable.
-    """
+def find_application(name):
 
-    for base in SEARCH_PATHS:
+    apps = load_index()
 
-        if not base:
-            continue
-
-        for root, dirs, files in os.walk(base):
-
-            if executable_name in files:
-                return os.path.join(root, executable_name)
-
-    return None
+    return apps.get(name.lower())
