@@ -1,39 +1,33 @@
-import webbrowser 
+from speech import say
+
+from commands.browser import open_website
+from commands.search import google_search
+from commands.system import tell_time, exit_assistant
+
+from ai import handle_ai_query
+
 
 def process_query(query):
-        
+
     if not query:
-        continue
+        return
 
-    #Simple Greeting
-    elif "hello" in query:
+    if "hello" in query:
         say("Hello! How can I help you today?")
+        return
 
-    #Open Websites
+    if open_website(query):
+        return
 
-    site_opened = False
-    for name, url in sites.items():
-        if f"open {name}" in query:
-            say(f"Opening {name}")
-            webbrowser.open(url)
-    if site_opened: continue
+    if google_search(query):
+        return
 
-    #Time
+    if tell_time(query):
+        return
 
+    result = exit_assistant(query)
+    if result == "EXIT":
+        return "EXIT"
 
-    #Search
-
-
-    #AI Response
-    elif "using ai" in query:
-        say("Consulting the AI, please wait...")
-        response = ai_response(query)
-        save_response(query, response)
-        say("The answer has been saved to your folder.")
-
-    #Exit Commands
-
-
-    # just chatting
-    elif "chat" in query:
-        chat_response = chat_with_me()
+    # AI fallback
+    handle_ai_query(query)

@@ -1,23 +1,48 @@
+from openai import OpenAI
 from dotenv import load_dotenv
+import os
 import datetime
 import re
-from openai import OpenAI
-import os
 
 load_dotenv()
+
 client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
 
-def save_filename(query, max_length=20): 
-    filename = re.sub(r'[^\w\s-]', '', query)
-    filename = filename.strip().replace(" ", '_')
-    filename = filename[:max_length]
-    timestamp = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
-    return f'{filename}_{timestamp}.txt'
 
-def save_response(query, response):
-    os.makedirs("ai_responses", exist_ok=True)
-    filename = save_filename(query)
-    filepath = os.path.join("ai_responses", filename)
-    with open(filepath, 'w', encoding="utf-8") as f:
-        f.write(f'USER QUERY:\n{query}\n\nAI RESPONSE:\n{response}')
-    print(f'Saved AI response to {filepath}')
+def ai_response(query):
+    try:
+        response = client.chat.completions.create(
+            model="gpt-4o-mini",
+            messages=[
+                {
+                    "role": "system",
+                    "content": "You are a helpful voice assistant."
+                },
+                {
+                    "role": "user",
+                    "content": query
+                }
+            ]
+        )
+
+        return response.choices[0].message.content
+
+    except Exception as e:
+        return f"AI Error: {e}"
+
+
+def handle_ai_query(query):
+    if "using ai" in query:
+        from speech import say
+
+        say("Consulting the AI, please wait...")
+
+        response = ai_response(query)
+
+        save_response(query, response)
+
+        say(response)
+
+        return True
+
+    return False

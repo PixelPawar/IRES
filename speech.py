@@ -13,11 +13,12 @@ engine.setProperty('volume', 1.0)
 
 def say(txt):
     print(f"Assistant: {txt}")
-    #Ensure engine doesn't hang
+
     if engine._inLoop:
         engine.endLoop()
-        engine.say(txt)
-        engine.runAndWait()
+
+    engine.say(txt)
+    engine.runAndWait()
 
 def take_task():
     r = sr.Recognizer()

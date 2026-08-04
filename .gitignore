@@ -1,3 +1,21 @@
+# Environment
 .env
-mycode.md
-ai_responses/
+venv/
+.venv/
+
+# Python
+__pycache__/
+*.pyc
+
+# IDE
+.vscode/
+.idea/
+
+# Logs
+*.log
+
+# AI Responses
+data/ai_responses/
+
+# Database
+*.db
