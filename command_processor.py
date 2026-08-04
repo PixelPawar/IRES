@@ -3,6 +3,7 @@ from speech import say
 from commands.browser import open_website
 from commands.search import google_search
 from commands.system import tell_time, exit_assistant
+from commands.apps import open_application 
 
 from ai import handle_ai_query
 
@@ -18,6 +19,9 @@ def process_query(query):
 
     if open_website(query):
         return
+    
+    if open_application(query):
+        return 
 
     if google_search(query):
         return
@@ -29,5 +33,5 @@ def process_query(query):
     if result == "EXIT":
         return "EXIT"
 
-    # AI fallback
+
     handle_ai_query(query)
