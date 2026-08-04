@@ -1,13 +1,14 @@
 import speech_recognition as sr
 import pyttsx3 
+from config import SPEECH_RATE, SPEECH_VOLUME
 
 
 # Initialize engine ONCE
 engine = pyttsx3.init()
 
 # Tweak speech properties for better responsiveness
-engine.setProperty('rate', 180)  # Speed of speech
-engine.setProperty('volume', 1.0)
+engine.setProperty('rate', SPEECH_RATE)  # Speed of speech
+engine.setProperty('volume', SPEECH_VOLUME)
 
 
 

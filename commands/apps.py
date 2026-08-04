@@ -1,32 +1,51 @@
-import subprocess
+from config import APPLICATIONS
+from utils.parser import is_open_command
 from speech import say
+import subprocess
+from utils.parser import fuzzy_match 
+from utils.app_finder import find_executable
+
+
+OPEN_WORDS = [
+    "open",
+    "launch",
+    "start"
+]
+
 
 def open_application(query):
-    apps = {
-    "notepad": {
-        "command": "notepad.exe",
-        "display": "Notepad"
-    },
-    "paint": {
-        "command": "mspaint.exe",
-        "display": "Paint"
-    },
-    "calculator": {
-        "command": "calc.exe",
-        "display": "Calculator"
-    },
-    "file explorer": {
-        "command": "explorer.exe",
-        "display": "File Explorer"
-    }
-}
 
-    for name, app in apps.items():
-        if f"open {name}" in query:
+    if not is_open_command(query, OPEN_WORDS):
+        return False
+
+    for app in APPLICATIONS.values():
+
+        app_name = extract_app_name(query)
+
+        all_aliases = []
+
+        for app in APPLICATIONS.values():
+            all_aliases.extend(app["aliases"])
+
+        match = fuzzy_match(app_name, all_aliases)
+
+        if not match:
+            return False
+
+    for app in APPLICATIONS.values():
+
+        if match in app["aliases"]:
+
             say(f"Opening {app['display']}")
 
             try:
-                subprocess.Popen(app["command"])
+                path = find_executable(app["command"])
+
+                if path:
+                    subprocess.Popen(path)
+                else:
+                    subprocess.Popen(app["command"])
+
                 return True
 
             except Exception as e:
@@ -34,5 +53,27 @@ def open_application(query):
                 print(e)
                 return True
 
-    return False
 
+
+def extract_app_name(query):
+    """
+    Remove command words and return only the application name.
+    """
+
+    words_to_remove = [
+        "open",
+        "launch",
+        "start",
+        "run",
+        "please",
+        "can",
+        "could",
+        "you"
+    ]
+
+    query = query.lower()
+
+    for word in words_to_remove:
+        query = query.replace(word, "")
+
+    return " ".join(query.split())
