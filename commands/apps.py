@@ -2,8 +2,9 @@ import subprocess
 
 from config import APPLICATIONS
 from speech import say
-from utils.app_finder import find_executable
+from utils.app_finder import find_application
 from utils.parser import fuzzy_match, is_open_command
+from utils.app_finder import find_application
 
 
 OPEN_WORDS = [
@@ -11,7 +12,6 @@ OPEN_WORDS = [
     "launch",
     "start"
 ]
-
 
 def open_application(query):
     """
@@ -23,6 +23,8 @@ def open_application(query):
 
     app_name = extract_app_name(query)
 
+    # Step 1: Search configured applications
+
     all_aliases = []
 
     for app in APPLICATIONS.values():
@@ -30,30 +32,49 @@ def open_application(query):
 
     match = fuzzy_match(app_name, all_aliases)
 
-    if not match:
-        return False
+    if match:
 
-    for app in APPLICATIONS.values():
+        for app in APPLICATIONS.values():
 
-        if match in app["aliases"]:
+            if match in app["aliases"]:
 
-            say(f"Opening {app['display']}")
+                say(f"Opening {app['display']}")
 
-            try:
-                path = find_executable(app["command"])
+                try:
+                    path = find_application(app["command"].replace(".exe", ""))
 
-                if path:
-                    subprocess.Popen(path)
-                else:
-                    subprocess.Popen(app["command"])
+                    if path:
+                        subprocess.Popen(path)
+                    else:
+                        subprocess.Popen(app["command"])
 
-                return True
+                    return True
 
-            except Exception as e:
-                say(f"Unable to open {app['display']}")
-                print(e)
-                return True
+                except Exception as e:
+                    say(f"Unable to open {app['display']}")
+                    print(e)
+                    return True
 
+    # Step 2: Search indexed applications
+
+    path = find_application(app_name)
+
+    if path:
+
+        say(f"Opening {app_name}")
+
+        try:
+            subprocess.Popen(path)
+            return True
+
+        except Exception as e:
+            say("Unable to open the application.")
+            print(e)
+            return True
+
+    # Step 3: Nothing found
+
+    say(f"I couldn't find {app_name}.")
     return False
 
 
