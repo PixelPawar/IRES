@@ -1,3 +1,9 @@
+GREETINGS = [
+    "hello",
+    "hi",
+    "hey",
+]
+
 OPEN_WORDS = [
     "open",
     "launch",
@@ -8,17 +14,11 @@ OPEN_WORDS = [
 SEARCH_WORDS = [
     "search",
     "look up",
-    "find on google",
+    "google",
 ]
 
 TIME_WORDS = [
     "time",
     "current time",
     "what time",
-]
-
-GREETINGS = [
-    "hello",
-    "hi",
-    "hey",
 ]

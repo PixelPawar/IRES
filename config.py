@@ -97,3 +97,10 @@ APPLICATIONS = {
         ]
     },
 }
+
+WEBSITES = {
+    "google": "https://www.google.com",
+    "youtube": "https://www.youtube.com",
+    "github": "https://github.com",
+    "stackoverflow": "https://stackoverflow.com",
+}

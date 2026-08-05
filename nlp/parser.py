@@ -1,34 +1,66 @@
+from nlp.entities import extract_application
 from nlp.intents import Intent
 from nlp.models import IntentResult
-from nlp.entities import extract_application
+from nlp.patterns import (
+    GREETINGS,
+    OPEN_WORDS,
+    SEARCH_WORDS,
+    TIME_WORDS,
+)
 
 
-def parse(query: str):
+def parse(query: str) -> IntentResult:
 
     q = query.lower()
 
-    if any(word in q for word in ["hello", "hi", "hey"]):
+    # Greeting
+    if any(word in q for word in GREETINGS):
 
         return IntentResult(
             intent=Intent.GREETING,
-            original_query=query
+            original_query=query,
         )
 
+    # Time
+    if any(word in q for word in TIME_WORDS):
+
+        return IntentResult(
+            intent=Intent.ASK_TIME,
+            original_query=query,
+        )
+
+    # Google Search
+    if any(word in q for word in SEARCH_WORDS):
+
+        search_text = q
+
+        for word in SEARCH_WORDS:
+            search_text = search_text.replace(word, "")
+
+        return IntentResult(
+            intent=Intent.SEARCH_GOOGLE,
+            entities={
+                "query": search_text.strip()
+            },
+            original_query=query,
+        )
+
+    # Application
     app = extract_application(q)
 
-    if app:
+    if app and any(word in q for word in OPEN_WORDS):
 
         return IntentResult(
             intent=Intent.OPEN_APPLICATION,
+            confidence=0.95,
             entities={
                 "application": app
             },
-            confidence=0.95,
-            original_query=query
+            original_query=query,
         )
 
     return IntentResult(
         intent=Intent.UNKNOWN,
-        confidence=0.0,
-        original_query=query
+        confidence=0,
+        original_query=query,
     )

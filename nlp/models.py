@@ -1,13 +1,11 @@
 from dataclasses import dataclass, field
 
+from nlp.intents import Intent
+
 
 @dataclass
 class IntentResult:
-    """
-    Result returned by the NLP parser.
-    """
-
-    intent: str
+    intent: Intent
     confidence: float = 1.0
     entities: dict = field(default_factory=dict)
     original_query: str = ""
