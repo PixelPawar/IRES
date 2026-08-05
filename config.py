@@ -1,3 +1,13 @@
+from pathlib import Path
+
+HOME = Path.home()
+
+INDEX_FOLDERS = [
+    HOME / "Desktop",
+    HOME / "Documents",
+    HOME / "Downloads",
+    HOME / "Pictures",
+]
 # Speech Settings
 SPEECH_RATE = 180
 SPEECH_VOLUME = 1.0
