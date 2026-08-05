@@ -1,7 +1,6 @@
-import json
 import os
 
-CACHE_FILE = "cache/apps.json"
+from utils.cache_manager import save_cache
 
 SEARCH_PATHS = [
     os.environ.get("PROGRAMFILES"),
@@ -11,6 +10,9 @@ SEARCH_PATHS = [
 
 
 def build_index():
+    """
+    Scan common installation folders and build an application index.
+    """
 
     apps = {}
 
@@ -30,7 +32,6 @@ def build_index():
                     if name not in apps:
                         apps[name] = os.path.join(root, file)
 
-    with open(CACHE_FILE, "w") as f:
-        json.dump(apps, f, indent=4)
+    save_cache("apps", apps)
 
     print(f"Indexed {len(apps)} applications.")

@@ -4,11 +4,14 @@ from commands.browser import open_website
 from commands.search import google_search
 from commands.system import tell_time, exit_assistant
 from commands.apps import open_application 
+from commands.files import open_folder
 
 from ai import handle_ai_query
 
 
 def process_query(query):
+    if open_folder(query):
+        return
 
     if not query:
         return
