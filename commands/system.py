@@ -2,18 +2,18 @@ import datetime
 from speech import say
 
 
-def tell_time(query):
+def tell_time(_=None):
     """
-    Tell the current time.
-    Returns True if the command was handled.
+    Pure executor.
+
+    Speaks the current time.
     """
 
-    if "the time" in query or "time" in query:
-        time_str = datetime.datetime.now().strftime("%I:%M %p")
-        say(f"The time is {time_str}")
-        return True
+    time_str = datetime.datetime.now().strftime("%I:%M %p")
 
-    return False
+    say(f"The time is {time_str}")
+
+    return True
 
 
 def exit_assistant(query):

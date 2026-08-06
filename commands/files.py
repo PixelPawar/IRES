@@ -6,41 +6,61 @@ from utils.paths import COMMON_FOLDERS
 from utils.file_finder import find_file
 
 
-def open_folder(query):
+# =====================================================
+# Pure Executors
+# =====================================================
+
+def launch_folder(folder_name):
     """
-    Opens common Windows folders.
-    """
-    query = query.lower()
+    Pure executor.
 
-    for folder_name, folder_path in COMMON_FOLDERS.items():
-
-        if folder_name in query:
-
-            if folder_path.exists():
-                say(f"Opening {folder_name}")
-                subprocess.Popen(f'explorer "{folder_path}"')
-            else:
-                say(f"{folder_name} folder was not found.")
-
-            return True
-
-    return False
-
-
-def open_file(query):
-    """
-    Opens a file using the indexed file database.
-    If multiple matches are found, the user is asked to choose one.
+    Opens a common Windows folder.
     """
 
-    file_name = extract_file_name(query)
+    if not folder_name:
+        return False
+
+    folder_name = folder_name.lower().strip()
+
+    folder_path = COMMON_FOLDERS.get(folder_name)
+
+    if not folder_path:
+        return False
+
+    if not folder_path.exists():
+        say(f"{folder_name} folder was not found.")
+        return False
+
+    try:
+        say(f"Opening {folder_name}")
+        subprocess.Popen(f'explorer "{folder_path}"')
+        return True
+
+    except Exception as e:
+        say("Unable to open the folder.")
+        print(e)
+        return False
+
+
+def launch_file(file_name):
+    """
+    Pure executor.
+
+    Opens a file from the indexed file database.
+    """
+
+    if not file_name:
+        return False
 
     results = find_file(file_name)
 
     if not results:
+        say(f"I couldn't find {file_name}.")
         return False
 
-    # Only one match
+    # -----------------------------
+    # Single match
+    # -----------------------------
     if len(results) == 1:
 
         file = results[0]
@@ -53,9 +73,11 @@ def open_file(query):
         except Exception as e:
             say("Unable to open the file.")
             print(e)
-            return True
+            return False
 
+    # -----------------------------
     # Multiple matches
+    # -----------------------------
     say("I found multiple matching files.")
 
     print("\nMatching Files:\n")
@@ -84,12 +106,47 @@ def open_file(query):
 
         say("Invalid selection.")
 
-        return True
+        return False
 
+
+# =====================================================
+# Temporary Compatibility Wrappers
+# =====================================================
+
+def open_folder(query):
+    """
+    Temporary compatibility wrapper.
+    Will be removed after the NLP migration.
+    """
+
+    query = query.lower()
+
+    for folder_name in COMMON_FOLDERS:
+
+        if folder_name in query:
+            return launch_folder(folder_name)
+
+    return False
+
+
+def open_file(query):
+    """
+    Temporary compatibility wrapper.
+    Will be removed after the NLP migration.
+    """
+
+    file_name = extract_file_name(query)
+
+    return launch_file(file_name)
+
+
+# =====================================================
+# Helpers
+# =====================================================
 
 def extract_file_name(query):
     """
-    Remove command words and return only the file name.
+    Removes command words and returns only the file name.
     """
 
     words = [

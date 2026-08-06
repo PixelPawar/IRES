@@ -1,4 +1,5 @@
 from difflib import get_close_matches
+import os
 
 from utils.cache_manager import load_cache
 
@@ -6,6 +7,11 @@ from utils.cache_manager import load_cache
 def find_file(file_name, max_results=5):
     """
     Returns a list of matching files.
+    Each result is a dictionary:
+    {
+        "name": filename,
+        "path": full_path
+    }
     """
 
     files = load_cache("files")
@@ -17,7 +23,10 @@ def find_file(file_name, max_results=5):
 
     # Exact match
     if file_name in files:
-        return [files[file_name]]
+        return [{
+            "name": file_name,
+            "path": files[file_name]
+        }]
 
     matches = get_close_matches(
         file_name,
@@ -26,4 +35,12 @@ def find_file(file_name, max_results=5):
         cutoff=0.50
     )
 
-    return [files[name] for name in matches]
+    results = []
+
+    for name in matches:
+        results.append({
+            "name": name,
+            "path": files[name]
+        })
+
+    return results

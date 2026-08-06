@@ -1,17 +1,39 @@
 import webbrowser
+
 from speech import say
 
-sites = {
+
+SITES = {
     "youtube": "https://youtube.com",
     "wikipedia": "https://en.wikipedia.org",
-    "google": "https://www.google.com"
+    "google": "https://www.google.com",
+    "github": "https://github.com",
+    "stackoverflow": "https://stackoverflow.com",
+    "chatgpt": "https://chat.openai.com",
 }
 
-def open_website(query):
-    for name, url in sites.items():
-        if f"open {name}" in query:
-            say(f"Opening {name}")
-            webbrowser.open(url)
-            return True
+
+def open_website(site_name):
+    """
+    Pure executor.
+
+    Opens a website using its name.
+    Returns True if successful, otherwise False.
+    """
+
+    if not site_name:
+        return False
+
+    site_name = site_name.lower().strip()
+
+    if site_name in SITES:
+
+        say(f"Opening {site_name}")
+
+        webbrowser.open(SITES[site_name])
+
+        return True
+
+    say(f"I don't know the website {site_name}.")
 
     return False
